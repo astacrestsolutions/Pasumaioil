@@ -1,0 +1,204 @@
+Core brand colors
+Primary Green (Passumai feel)
+
+HEX: #2F7F3B
+
+RGB: 47, 127, 59
+
+Accent Gold (quality / premium)
+
+HEX: #D9A441
+
+RGB: 217, 164, 65
+
+Deep Brown (chekku / wood / tradition)
+
+HEX: #5A3B1E
+
+RGB: 90, 59, 30
+
+Support / background colors
+Light Cream (background / labels)
+
+HEX: #FFF7E6
+
+RGB: 255, 247, 230
+
+Dark Text (for typography)
+
+HEX: #1F1F1F
+
+RGB: 31, 31, 31
+
+
+Logo main: Prata
+
+English headings / highlights: Poppins (SemiBold)
+
+English body text: Poppins (Regular)
+
+Tamil: Tiro Tamil (Regular / Medium)
+
+Core pages to design
+Home / Landing page
+
+Hero section: product photo, “Pure Marachekku Oil from Virudhunagar”, main CTA “Order Now”.
+
+Key benefits: purity, cold-pressed, no chemicals, local sourcing.
+
+Social proof: reviews, star ratings, maybe “trusted by X families in Virudhunagar”.
+
+Product page (Passumai Oil details)
+
+Size options (500 ml, 1L, etc.), price, add-to-cart button.
+
+Ingredients, process (chekku), shelf life, usage benefits.
+
+FAQ: delivery, return, how to store the oil.
+
+Cart + Checkout
+
+Simple cart: product image, quantity change, subtotal, “Checkout” button.
+
+Checkout: customer details, address, payment, order summary in a clean flow.
+
+About page
+
+Story of Passumai Oil, Virudhunagar roots, why marachekku, photos of the unit.
+
+Trust badges: hygiene, small-batch, maybe lab test mention.
+
+Contact / Support page
+
+Phone, WhatsApp link, email, address, small map.
+
+Simple contact form for bulk/wholesale queries.
+
+Optional: Blog / Education page
+
+Short articles like “Why cold-pressed oil is better”, “How to check oil purity at home”.
+
+Practical plan for you
+MVP (first launch):
+
+Page 1: Home (with main product section + add to cart)
+
+Page 2: Cart & Checkout (combined)
+
+Page 3: About + Contact (single simple page)
+
+For Passumai Oil, you can keep the DB simple but scalable: one table for products, one for orders, one for order items, and one for customers.
+## 1. `products` table (oil variants)
+- `id` (PK, INT, AUTO_INCREMENT)  
+- `name` (VARCHAR, e.g. “Passumai Groundnut Oil 1L”)  
+- `slug` (VARCHAR, URL-friendly name)  
+- `description` (TEXT)  
+- `oil_type` (ENUM / VARCHAR, e.g. groundnut, gingelly, coconut)  
+- `size_ml` (INT, e.g. 500, 1000)  
+- `price` (DECIMAL(10,2))  
+- `stock_qty` (INT)  
+- `is_active` (BOOLEAN)  
+- `created_at` (DATETIME)  
+- `updated_at` (DATETIME)  
+
+This follows typical ecommerce “products” table patterns. [scribd](https://www.scribd.com/document/683569008/e-store-databse-shema)
+## 2. `customers` table
+- `id` (PK, INT, AUTO_INCREMENT)  
+- `name` (VARCHAR)  
+- `email` (VARCHAR, UNIQUE, NULL if you allow guest checkout)  
+- `phone` (VARCHAR)  
+- `address_line1` (VARCHAR)  
+- `address_line2` (VARCHAR, NULL)  
+- `city` (VARCHAR)  
+- `state` (VARCHAR, e.g. “Tamil Nadu”)  
+- `pincode` (VARCHAR)  
+- `created_at` (DATETIME)  
+
+Similar to standard ecommerce customer design. [scribd](https://www.scribd.com/document/683569008/e-store-databse-shema)
+## 3. `orders` table
+- `id` (PK, INT, AUTO_INCREMENT)  
+- `customer_id` (FK → customers.id)  
+- `order_number` (VARCHAR, unique, e.g. PAS-2026-0001)  
+- `status` (ENUM: `pending`, `paid`, `shipped`, `delivered`, `cancelled`)  
+- `subtotal_amount` (DECIMAL(10,2))  
+- `shipping_amount` (DECIMAL(10,2))  
+- `total_amount` (DECIMAL(10,2))  
+- `payment_method` (ENUM: `cod`, `upi`, `card`)  
+- `payment_status` (ENUM: `pending`, `success`, `failed`)  
+- `shipping_address_json` (JSON or TEXT, snapshot of address at order time)  
+- `placed_at` (DATETIME)  
+- `updated_at` (DATETIME)  
+
+This matches common `orders` design in ecommerce schemas. [scribd](https://www.scribd.com/document/683569008/e-store-databse-shema)
+## 4. `order_items` table
+- `id` (PK, INT, AUTO_INCREMENT)  
+- `order_id` (FK → orders.id)  
+- `product_id` (FK → products.id)  
+- `product_name` (VARCHAR, snapshot for history)  
+- `unit_price` (DECIMAL(10,2), price at time of order)  
+- `quantity` (INT)  
+- `line_total` (DECIMAL(10,2))  
+
+This is the classic link table between orders and products. [stackoverflow](https://stackoverflow.com/questions/17711324/database-structure-for-customer-table-having-many-orders-per-customer-and-many)
+## Example minimal SQL (MySQL-style, core parts)
+```sql
+CREATE TABLE products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE,
+  description TEXT,
+  oil_type VARCHAR(50),
+  size_ml INT,
+  price DECIMAL(10,2) NOT NULL,
+  stock_qty INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(150),
+  phone VARCHAR(20),
+  address_line1 VARCHAR(255),
+  address_line2 VARCHAR(255),
+  city VARCHAR(100),
+  state VARCHAR(100),
+  pincode VARCHAR(10),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  customer_id INT NOT NULL,
+  order_number VARCHAR(50) UNIQUE,
+  status ENUM('pending','paid','shipped','delivered','cancelled') DEFAULT 'pending',
+  subtotal_amount DECIMAL(10,2) NOT NULL,
+  shipping_amount DECIMAL(10,2) NOT NULL DEFAULT 0,
+  total_amount DECIMAL(10,2) NOT NULL,
+  payment_method ENUM('cod','upi','card') DEFAULT 'cod',
+  payment_status ENUM('pending','success','failed') DEFAULT 'pending',
+  shipping_address_json JSON,
+  placed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  product_name VARCHAR(255),
+  unit_price DECIMAL(10,2) NOT NULL,
+  quantity INT NOT NULL,
+  line_total DECIMAL(10,2) NOT NULL,
+  CONSTRAINT fk_orderitems_order FOREIGN KEY (order_id) REFERENCES orders(id),
+  CONSTRAINT fk_orderitems_product FOREIGN KEY (product_id) REFERENCES products(id)
+);
+```
+
+This is enough for 90% of your Passumai Oil site: listing oils, placing orders, and tracking items. Designs like this are standard in ecommerce tutorials and sample DBs. [scribd](https://www.scribd.com/document/683569008/e-store-databse-shema)
+
+If you tell your stack (Laravel, Node, Django, etc.), the schema can be tuned to match conventions (timestamps, soft deletes, etc.) and extended with coupons or delivery slots specifically for Virudhunagar/nearby.
+

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Pasumai Cold-Pressed Oils</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Tiro+Tamil&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Floating Elements Background -->
+  <div class="floating-elements" aria-hidden="true">
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="grain grain-1"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="#2F7F3B" stroke-width="2"/>
+          <path d="M20 8C20 8 12 14 12 22C12 26 15 30 20 30C25 30 28 26 28 22C28 14 20 8 20 8Z" fill="#2F7F3B"/>
+          <path d="M20 12C20 12 16 16 16 21C16 24 17.5 27 20 27C22.5 27 24 24 24 21C24 16 20 12 20 12Z" fill="#D9A441"/>
+        </svg>
+        <span class="logo-text">Pasumai</span>
+      </a>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="page-header-bg"></div>
+    <div class="container">
+      <div class="page-header-content reveal-up">
+        <span class="section-label">Our Collection</span>
+        <h1>Premium Cold-Pressed Oils</h1>
+        <p>Handcrafted using traditional chekku methods for authentic taste and nutrition</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section class="products-section section">
+    <div class="container">
+      <div class="products-grid">
+        <!-- Groundnut Oil -->
+        <div class="product-card-full reveal-up delay-1">
+          <div class="product-image-full">
+            <div class="product-placeholder-large">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" fill="#F5EBD9"/>
+                <path d="M100 40C100 40 50 70 50 110C50 140 70 170 100 170C130 170 150 140 150 110C150 70 100 40 100 40Z" fill="#C9A227"/>
+                <ellipse cx="100" cy="110" rx="30" ry="40" fill="#B8922A" opacity="0.5"/>
+              </svg>
+            </div>
+            <span class="product-badge-large">Bestseller</span>
+          </div>
+          <div class="product-info-full">
+            <h2 class="product-title">Groundnut Oil</h2>
+            <p class="product-tagline">நிலக்கடலை எண்ணெய்</p>
+            <p class="product-description">Our premium groundnut oil is extracted from carefully selected, sun-dried peanuts using traditional wooden press (chekku) method. Rich in natural antioxidants and healthy fats, it brings an authentic nutty flavor to your cooking.</p>
+            <ul class="product-features">
+              <li>Ideal for deep frying and everyday cooking</li>
+              <li>High smoke point for better cooking</li>
+              <li>Rich in Vitamin E and antioxidants</li>
+              <li>No chemicals or preservatives added</li>
+            </ul>
+            <div class="product-pricing">
+              <span class="price-main">₹220</span>
+              <span class="price-unit">per Liter</span>
+            </div>
+            <a href="contact.html?product=groundnut" class="btn btn-primary">Order Now</a>
+          </div>
+        </div>
+
+        <!-- Nallennai (Sesame Oil) -->
+        <div class="product-card-full featured reveal-up delay-2">
+          <div class="product-image-full">
+            <div class="product-placeholder-large">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" fill="#F5EBD9"/>
+                <path d="M100 40C100 40 50 70 50 110C50 140 70 170 100 170C130 170 150 140 150 110C150 70 100 40 100 40Z" fill="#8B6914"/>
+                <ellipse cx="100" cy="110" rx="30" ry="40" fill="#705812" opacity="0.5"/>
+              </svg>
+            </div>
+            <span class="product-badge-large premium">Premium Range</span>
+          </div>
+          <div class="product-info-full">
+            <h2 class="product-title">Nallennai (Sesame Oil)</h2>
+            <p class="product-tagline">நல்லெண்ணெய்</p>
+            <p class="product-description">Our signature sesame oil comes in two unique variants, each crafted with special ingredients for distinct flavors. Made from premium sesame seeds using age-old extraction methods.</p>
+            
+            <div class="variant-cards">
+              <div class="variant-card">
+                <h4>Mandavellam Variant</h4>
+                <p>Traditional jaggery-processed sesame oil with a subtle sweetness and rich aroma. Perfect for pickles and traditional dishes.</p>
+                <div class="variant-price">
+                  <span class="price-main">₹330</span>
+                  <span class="price-unit">per Liter</span>
+                </div>
+              </div>
+              <div class="variant-card">
+                <h4>Karupatti Variant</h4>
+                <p>Enriched with palm jaggery for a deeper, earthier flavor. Ideal for medicinal use and special cooking preparations.</p>
+                <div class="variant-price">
+                  <span class="price-main">₹340</span>
+                  <span class="price-unit">per Liter</span>
+                </div>
+              </div>
+            </div>
+            
+            <a href="contact.html?product=nallennai" class="btn btn-primary">Order Now</a>
+          </div>
+        </div>
+
+        <!-- Coconut Oil -->
+        <div class="product-card-full reveal-up delay-3">
+          <div class="product-image-full">
+            <div class="product-placeholder-large">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" fill="#F5EBD9"/>
+                <path d="M100 40C100 40 50 70 50 110C50 140 70 170 100 170C130 170 150 140 150 110C150 70 100 40 100 40Z" fill="#FFFFFF"/>
+                <ellipse cx="100" cy="110" rx="30" ry="40" fill="#F0F0F0"/>
+              </svg>
+            </div>
+            <span class="product-badge-large">Pure</span>
+          </div>
+          <div class="product-info-full">
+            <h2 class="product-title">Coconut Oil</h2>
+            <p class="product-tagline">தேங்காய் எண்ணெய்</p>
+            <p class="product-description">Premium cold-pressed coconut oil extracted from fresh, mature coconuts. Our traditional method preserves the natural lauric acid and medium-chain fatty acids, making it perfect for both cooking and skincare.</p>
+            <ul class="product-features">
+              <li>Perfect for South Indian cooking</li>
+              <li>Natural moisturizer for skin and hair</li>
+              <li>Rich in MCTs for better metabolism</li>
+              <li>Aromatic and flavorful</li>
+            </ul>
+            <div class="product-pricing">
+              <span class="price-main">₹380</span>
+              <span class="price-unit">per Liter</span>
+            </div>
+            <a href="contact.html?product=coconut" class="btn btn-primary">Order Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Banner -->
+  <section class="info-banner">
+    <div class="container">
+      <div class="info-grid reveal-up">
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2F7F3B" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13"/>
+            <path d="M16 8h4l3 3v5h-7V8z"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+          <span>Free delivery on orders above ₹1000</span>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2F7F3B" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>100% quality guarantee</span>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2F7F3B" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>Order via WhatsApp: +91 98765 43210</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="18" stroke="#2F7F3B" stroke-width="2"/>
+              <path d="M20 8C20 8 12 14 12 22C12 26 15 30 20 30C25 30 28 26 28 22C28 14 20 8 20 8Z" fill="#2F7F3B"/>
+              <path d="M20 12C20 12 16 16 16 21C16 24 17.5 27 20 27C22.5 27 24 24 24 21C24 16 20 12 20 12Z" fill="#D9A441"/>
+            </svg>
+            <span class="logo-text">Pasumai</span>
+          </a>
+          <p class="footer-desc">Traditional cold-pressed oils crafted with care for your health and taste.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact Us</h4>
+          <p>Tamil Nadu, India</p>
+          <p>+91 98765 43210</p>
+          <p>info@pasumai.com</p>
+        </div>
+        <div class="footer-social">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook" class="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="Instagram" class="social-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="18" cy="6" r="1" fill="currentColor"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="WhatsApp" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Pasumai. All rights reserved. Made with care in Tamil Nadu.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
