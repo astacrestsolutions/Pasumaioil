@@ -1,7 +1,7 @@
 /* ================================
    PASUMAI - script.js
    Handles: nav, scroll reveal,
-   counters, form logic
+   counters, form logic, WhatsApp
    ================================ */
 
 /* ---------- NAVBAR ---------- */
@@ -116,6 +116,14 @@ const prices = {
   coconut:                380
 };
 
+// Human-readable product names for WhatsApp message
+const productNames = {
+  groundnut:              'Groundnut Oil',
+  'nallennai-mandavellam': 'Nallennai (Mandavellam)',
+  'nallennai-karupatti':   'Nallennai (Karupatti)',
+  coconut:                'Coconut Oil'
+};
+
 function updateTotal() {
   if (!productSel || !quantityIn || !totalAmount) return;
   const price = prices[productSel.value] || 0;
@@ -186,27 +194,66 @@ function validateForm() {
   return valid;
 }
 
+/* ---------- WHATSAPP ORDER ---------- */
+function sendToWhatsApp() {
+  const name    = document.getElementById('name').value.trim();
+  const phone   = document.getElementById('phone').value.trim();
+  const product = document.getElementById('product').value;
+  const qty     = document.getElementById('quantity').value;
+
+  // Readable product name & total
+  const readableName = productNames[product] || product;
+  const price        = prices[product] || 0;
+  const total        = price * parseInt(qty, 10);
+
+  const message = [
+    '🛒 *New Order — Pasumai Oils*',
+    '',
+    '👤 Name: ' + name,
+    '📞 Phone: ' + phone,
+    '🛢️ Product: ' + readableName,
+    '📦 Quantity: ' + qty + ' Litre' + (parseInt(qty, 10) > 1 ? 's' : ''),
+    '💰 Total: ₹' + total.toLocaleString('en-IN')
+  ].join('%0A');
+
+  const whatsappNumber = '916379244349'; // Your number with country code, no "+"
+  const whatsappURL    = 'https://wa.me/' + whatsappNumber + '?text=' + message;
+
+  window.open(whatsappURL, '_blank');
+}
+
+// Form submit → validate first, then WhatsApp
 if (orderForm) {
   orderForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    // Simulate order submission (replace with real API / WhatsApp deep-link as needed)
+    // Brief button feedback before opening WhatsApp
     const submitBtn = orderForm.querySelector('button[type="submit"]');
     if (submitBtn) {
-      submitBtn.textContent = 'Submitting…';
+      submitBtn.textContent = 'Opening WhatsApp…';
       submitBtn.disabled = true;
     }
 
+    // Small delay so the user sees the feedback
     setTimeout(() => {
+      sendToWhatsApp();
+
+      // Show success message after returning
       orderForm.classList.add('hidden');
       orderForm.style.display = 'none';
       if (successMsg) {
         successMsg.classList.remove('hidden');
         successMsg.style.display = '';
       }
-    }, 800);
+
+      // Reset button state (in case user goes back)
+      if (submitBtn) {
+        submitBtn.textContent = 'Send Order via WhatsApp';
+        submitBtn.disabled = false;
+      }
+    }, 600);
   });
 }
 
