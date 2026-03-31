@@ -102,160 +102,156 @@ if (statNumbers.length > 0 && 'IntersectionObserver' in window) {
   });
 }
 
-/* ---------- CONTACT FORM ---------- */
-const orderForm   = document.getElementById('orderForm');
-const successMsg  = document.getElementById('successMessage');
-const productSel  = document.getElementById('product');
-const quantityIn  = document.getElementById('quantity');
-const totalAmount = document.getElementById('totalAmount');
-
-const prices = {
-  groundnut:              220,
-  'nallennai-mandavellam': 330,
-  'nallennai-karupatti':   340,
-  coconut:                380
-};
-
-// Human-readable product names for WhatsApp message
-const productNames = {
-  groundnut:              'Groundnut Oil',
-  'nallennai-mandavellam': 'Nallennai (Mandavellam)',
-  'nallennai-karupatti':   'Nallennai (Karupatti)',
-  coconut:                'Coconut Oil'
-};
-
-function updateTotal() {
-  if (!productSel || !quantityIn || !totalAmount) return;
-  const price = prices[productSel.value] || 0;
-  const qty   = Math.max(1, parseInt(quantityIn.value, 10) || 1);
-  const total = price * qty;
-  totalAmount.textContent = total > 0 ? '₹' + total.toLocaleString('en-IN') : '₹0';
-}
-
-if (productSel)  productSel.addEventListener('change',  updateTotal);
-if (quantityIn)  quantityIn.addEventListener('input',   updateTotal);
-
-// Pre-select product from URL param: contact.html?product=groundnut
+/* ---------- ORDER FORM LOGIC ---------- */
 (function () {
-  if (!productSel) return;
-  const params  = new URLSearchParams(window.location.search);
-  const product = params.get('product');
-  if (product && prices[product] !== undefined) {
-    productSel.value = product;
-    updateTotal();
-  }
-})();
+  var prices = {
+    'groundnut': 220,
+    'nallennai-mandavellam': 330,
+    'nallennai-karupatti': 340,
+    'coconut': 380
+  };
 
-// Form validation helpers
-function showError(fieldId, errorId, msg) {
-  const field = document.getElementById(fieldId);
-  const error = document.getElementById(errorId);
-  if (field)  field.closest('.form-group').classList.add('error');
-  if (error)  error.textContent = msg;
-}
+  var productSelect = document.getElementById('product');
+  var quantityInput = document.getElementById('quantity');
+  var totalDisplay = document.getElementById('totalAmount');
+  var form = document.getElementById('orderForm');
+  var successMessage = document.getElementById('successMessage');
 
-function clearErrors() {
-  document.querySelectorAll('.form-group.error').forEach(g => g.classList.remove('error'));
-  document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
-}
+  if (!form) return;
 
-function validateForm() {
-  clearErrors();
-  let valid = true;
-
-  const name    = document.getElementById('name');
-  const phone   = document.getElementById('phone');
-  const product = document.getElementById('product');
-  const qty     = document.getElementById('quantity');
-
-  if (!name || !name.value.trim()) {
-    showError('name', 'nameError', 'Please enter your name.');
-    valid = false;
+  /* ── Live total calculation ── */
+  function updateTotal() {
+    var product = productSelect.value;
+    var qty = parseInt(quantityInput.value) || 0;
+    if (product && prices[product]) {
+      totalDisplay.textContent = '₹' + (prices[product] * qty).toLocaleString('en-IN');
+    } else {
+      totalDisplay.textContent = '₹0';
+    }
   }
 
-  if (!phone || !phone.value.trim()) {
-    showError('phone', 'phoneError', 'Please enter your phone number.');
-    valid = false;
-  } else if (!/^[6-9]\d{9}$/.test(phone.value.replace(/\s/g, ''))) {
-    showError('phone', 'phoneError', 'Enter a valid 10-digit Indian mobile number.');
-    valid = false;
+  productSelect.addEventListener('change', updateTotal);
+  quantityInput.addEventListener('input', updateTotal);
+
+  /* ── Pre-select product from URL param: contact.html?product=groundnut ── */
+  (function () {
+    var params  = new URLSearchParams(window.location.search);
+    var product = params.get('product');
+    if (product && prices[product] !== undefined) {
+      productSelect.value = product;
+      updateTotal();
+    }
+  })();
+
+  /* ── Error helpers ── */
+  function setError(fieldId, errorId, message) {
+    var field = document.getElementById(fieldId);
+    var error = document.getElementById(errorId);
+    if (field) field.classList.add('input-error');
+    if (error) error.textContent = message;
   }
 
-  if (!product || !product.value) {
-    showError('product', 'productError', 'Please select a product.');
-    valid = false;
+  function clearError(fieldId, errorId) {
+    var field = document.getElementById(fieldId);
+    var error = document.getElementById(errorId);
+    if (field) field.classList.remove('input-error');
+    if (error) error.textContent = '';
   }
 
-  if (!qty || parseInt(qty.value, 10) < 1) {
-    showError('quantity', 'quantityError', 'Quantity must be at least 1 litre.');
-    valid = false;
+  /* ── Clear errors on input / change ── */
+  ['name', 'phone', 'address', 'pincode', 'product', 'quantity'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', function () { clearError(id, id + 'Error'); });
+      el.addEventListener('change', function () { clearError(id, id + 'Error'); });
+    }
+  });
+
+  /* ── Validation ── */
+  function validateForm() {
+    var valid = true;
+
+    var name = document.getElementById('name').value.trim();
+    if (!name) { setError('name', 'nameError', 'Please enter your name'); valid = false; }
+    else { clearError('name', 'nameError'); }
+
+    var phone = document.getElementById('phone').value.trim();
+    if (!phone) { setError('phone', 'phoneError', 'Please enter your phone number'); valid = false; }
+    else if (!/^[0-9]{10}$/.test(phone)) { setError('phone', 'phoneError', 'Enter a valid 10-digit number'); valid = false; }
+    else { clearError('phone', 'phoneError'); }
+
+    var address = document.getElementById('address').value.trim();
+    if (!address) { setError('address', 'addressError', 'Please enter your delivery address'); valid = false; }
+    else { clearError('address', 'addressError'); }
+
+    var pincode = document.getElementById('pincode').value.trim();
+    if (pincode && !/^[0-9]{6}$/.test(pincode)) { setError('pincode', 'pincodeError', 'Enter a valid 6-digit pincode'); valid = false; }
+    else { clearError('pincode', 'pincodeError'); }
+
+    var product = productSelect.value;
+    if (!product) { setError('product', 'productError', 'Please select a product'); valid = false; }
+    else { clearError('product', 'productError'); }
+
+    var qty = parseInt(quantityInput.value);
+    if (!qty || qty < 1) { setError('quantity', 'quantityError', 'Quantity must be at least 1'); valid = false; }
+    else { clearError('quantity', 'quantityError'); }
+
+    return valid;
   }
 
-  return valid;
-}
-
-/* ---------- WHATSAPP ORDER ---------- */
-function sendToWhatsApp() {
-  const name    = document.getElementById('name').value.trim();
-  const phone   = document.getElementById('phone').value.trim();
-  const product = document.getElementById('product').value;
-  const qty     = document.getElementById('quantity').value;
-
-  // Readable product name & total
-  const readableName = productNames[product] || product;
-  const price        = prices[product] || 0;
-  const total        = price * parseInt(qty, 10);
-
-  const message = [
-    '🛒 *New Order — Pasumai Oils*',
-    '',
-    '👤 Name: ' + name,
-    '📞 Phone: ' + phone,
-    '🛢️ Product: ' + readableName,
-    '📦 Quantity: ' + qty + ' Litre' + (parseInt(qty, 10) > 1 ? 's' : ''),
-    '💰 Total: ₹' + total.toLocaleString('en-IN')
-  ].join('%0A');
-
-  const whatsappNumber = '916379244349'; // Your number with country code, no "+"
-  const whatsappURL    = 'https://wa.me/' + whatsappNumber + '?text=' + message;
-
-  window.open(whatsappURL, '_blank');
-}
-
-// Form submit → validate first, then WhatsApp
-if (orderForm) {
-  orderForm.addEventListener('submit', (e) => {
+  /* ── Form Submit ── */
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-
     if (!validateForm()) return;
 
-    // Brief button feedback before opening WhatsApp
-    const submitBtn = orderForm.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.textContent = 'Opening WhatsApp…';
-      submitBtn.disabled = true;
+    var name    = document.getElementById('name').value.trim();
+    var phone   = document.getElementById('phone').value.trim();
+    var address = document.getElementById('address').value.trim();
+    var pincode = document.getElementById('pincode').value.trim();
+    var city    = document.getElementById('city').value.trim();
+    var product = productSelect.value;
+    var qty     = parseInt(quantityInput.value);
+    var notes   = document.getElementById('notes').value.trim();
+    var businessNumber = document.getElementById('businessNumber').value;
+
+    var productLabel = productSelect.options[productSelect.selectedIndex].text;
+    var total = prices[product] * qty;
+
+    // Build full address string
+    var fullAddress = address;
+    if (city) fullAddress += ', ' + city;
+    if (pincode) fullAddress += ' - ' + pincode;
+
+    // Build WhatsApp message
+    var message = '🫒 *New Order — Pasumai Oils*\n\n';
+    message += '*Name:* ' + name + '\n';
+    message += '*Phone:* ' + phone + '\n';
+    message += '*Address:* ' + fullAddress + '\n\n';
+    message += '*Product:* ' + productLabel + '\n';
+    message += '*Quantity:* ' + qty + ' Litre(s)\n';
+    message += '*Total:* ₹' + total.toLocaleString('en-IN') + '\n';
+    if (notes) {
+      message += '\n*Notes:* ' + notes;
     }
+    message += '\n\n_Please confirm my order. Thank you!_';
 
-    // Small delay so the user sees the feedback
-    setTimeout(() => {
-      sendToWhatsApp();
+    var encodedMessage = encodeURIComponent(message);
+    var whatsappURL = 'https://wa.me/' + businessNumber + '?text=' + encodedMessage;
 
-      // Show success message after returning
-      orderForm.classList.add('hidden');
-      orderForm.style.display = 'none';
-      if (successMsg) {
-        successMsg.classList.remove('hidden');
-        successMsg.style.display = '';
-      }
+    // Show success & open WhatsApp
+    form.style.display = 'none';
+    successMessage.classList.remove('hidden');
+    window.open(whatsappURL, '_blank');
 
-      // Reset button state (in case user goes back)
-      if (submitBtn) {
-        submitBtn.textContent = 'Send Order via WhatsApp';
-        submitBtn.disabled = false;
-      }
-    }, 600);
+    // Auto-reset after 5 seconds
+    setTimeout(function () {
+      form.reset();
+      totalDisplay.textContent = '₹0';
+      form.style.display = '';
+      successMessage.classList.add('hidden');
+    }, 5000);
   });
-}
+})();
 
 /* ---------- SMOOTH ANCHOR SCROLL ---------- */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
