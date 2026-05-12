@@ -111,124 +111,202 @@ if (statNumbers.length > 0 && 'IntersectionObserver' in window) {
     'coconut': 380
   };
 
-  var productSelect = document.getElementById('product');
-  var quantityInput = document.getElementById('quantity');
+  var orderItemsContainer = document.getElementById('orderItems');
+  var addItemBtn = document.getElementById('addItemBtn');
   var totalDisplay = document.getElementById('totalAmount');
   var form = document.getElementById('orderForm');
   var successMessage = document.getElementById('successMessage');
 
-  if (!form) return;
+  if (!form || !orderItemsContainer) return;
 
-  /* ── Live total calculation ── */
-  function updateTotal() {
-    var product = productSelect.value;
-    var qty = parseInt(quantityInput.value) || 0;
-    if (product && prices[product]) {
-      totalDisplay.textContent = '₹' + (prices[product] * qty).toLocaleString('en-IN');
-    } else {
-      totalDisplay.textContent = '₹0';
-    }
+  function createProductSelect() {
+    var select = document.createElement('select');
+    select.className = 'product';
+    select.required = true;
+    select.innerHTML =
+      '<option value="">Choose a product…</option>' +
+      '<option value="groundnut">Groundnut Oil — ₹220 / Litre</option>' +
+      '<option value="nallennai-mandavellam">Nallennai (Mandavellam) — ₹330 / Litre</option>' +
+      '<option value="nallennai-karupatti">Nallennai (Karupatti) — ₹340 / Litre</option>' +
+      '<option value="coconut">Coconut Oil — ₹380 / Litre</option>';
+    return select;
   }
 
-  productSelect.addEventListener('change', updateTotal);
-  quantityInput.addEventListener('input', updateTotal);
+  function createOrderItem(productValue, qtyValue) {
+    var wrapper = document.createElement('div');
+    wrapper.className = 'order-item';
 
-  /* ── Pre-select product from URL param: contact.html?product=groundnut ── */
-  (function () {
-    var params  = new URLSearchParams(window.location.search);
-    var product = params.get('product');
-    if (product && prices[product] !== undefined) {
-      productSelect.value = product;
+    var row = document.createElement('div');
+    row.className = 'order-item-row';
+
+    var select = createProductSelect();
+    select.value = productValue || '';
+
+    var qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.className = 'quantity';
+    qtyInput.placeholder = 'Qty';
+    qtyInput.min = '1';
+    qtyInput.value = qtyValue || 1;
+    qtyInput.required = true;
+
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-item';
+    removeBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg><span>Remove</span>';
+    removeBtn.addEventListener('click', function () {
+      if (orderItemsContainer.children.length > 1) {
+        wrapper.remove();
+        updateTotal();
+      }
+    });
+
+    row.appendChild(select);
+    row.appendChild(qtyInput);
+    row.appendChild(removeBtn);
+
+    var errorContainer = document.createElement('div');
+    errorContainer.className = 'order-item-errors';
+    var productError = document.createElement('span');
+    productError.className = 'error-message productError';
+    var qtyError = document.createElement('span');
+    qtyError.className = 'error-message quantityError';
+
+    errorContainer.appendChild(productError);
+    errorContainer.appendChild(qtyError);
+
+    wrapper.appendChild(row);
+    wrapper.appendChild(errorContainer);
+
+    select.addEventListener('change', function () {
+      clearOrderItemError(wrapper);
       updateTotal();
-    }
-  })();
+    });
+    qtyInput.addEventListener('input', function () {
+      clearOrderItemError(wrapper);
+      updateTotal();
+    });
 
-  /* ── Error helpers ── */
-  function setError(fieldId, errorId, message) {
-    var field = document.getElementById(fieldId);
-    var error = document.getElementById(errorId);
-    if (field) field.classList.add('input-error');
-    if (error) error.textContent = message;
+    return wrapper;
   }
 
-  function clearError(fieldId, errorId) {
-    var field = document.getElementById(fieldId);
-    var error = document.getElementById(errorId);
-    if (field) field.classList.remove('input-error');
-    if (error) error.textContent = '';
+  function addOrderItem(productValue, qtyValue) {
+    orderItemsContainer.appendChild(createOrderItem(productValue, qtyValue));
   }
 
-  /* ── Clear errors on input / change ── */
-  ['name', 'phone', 'address', 'pincode', 'product', 'quantity'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input', function () { clearError(id, id + 'Error'); });
-      el.addEventListener('change', function () { clearError(id, id + 'Error'); });
-    }
+  function getOrderItems() {
+    return Array.from(orderItemsContainer.querySelectorAll('.order-item')).map(function (wrapper) {
+      return {
+        wrapper: wrapper,
+        productInput: wrapper.querySelector('.product'),
+        qtyInput: wrapper.querySelector('.quantity'),
+        product: wrapper.querySelector('.product').value,
+        qty: parseInt(wrapper.querySelector('.quantity').value, 10) || 0
+      };
+    });
+  }
+
+  function updateTotal() {
+    var total = 0;
+    getOrderItems().forEach(function (item) {
+      if (item.product && prices[item.product]) {
+        total += prices[item.product] * item.qty;
+      }
+    });
+    totalDisplay.textContent = '₹' + total.toLocaleString('en-IN');
+  }
+
+  addItemBtn.addEventListener('click', function () {
+    addOrderItem();
   });
 
-  /* ── Validation ── */
+  addOrderItem();
+  updateTotal();
+
+  function setError(input, errorEl, message) {
+    if (input) input.classList.add('input-error');
+    if (errorEl) errorEl.textContent = message;
+  }
+
+  function clearOrderItemError(wrapper) {
+    wrapper.querySelectorAll('.error-message').forEach(function (el) {
+      el.textContent = '';
+    });
+    wrapper.querySelectorAll('.input-error').forEach(function (el) {
+      el.classList.remove('input-error');
+    });
+  }
+
   function validateForm() {
     var valid = true;
 
     var name = document.getElementById('name').value.trim();
-    if (!name) { setError('name', 'nameError', 'Please enter your name'); valid = false; }
-    else { clearError('name', 'nameError'); }
+    if (!name) { setError(document.getElementById('name'), document.getElementById('nameError'), 'Please enter your name'); valid = false; }
+    else { clearOrderItemError(document.getElementById('name').parentNode); }
 
     var phone = document.getElementById('phone').value.trim();
-    if (!phone) { setError('phone', 'phoneError', 'Please enter your phone number'); valid = false; }
-    else if (!/^[0-9]{10}$/.test(phone)) { setError('phone', 'phoneError', 'Enter a valid 10-digit number'); valid = false; }
-    else { clearError('phone', 'phoneError'); }
+    if (!phone) { setError(document.getElementById('phone'), document.getElementById('phoneError'), 'Please enter your phone number'); valid = false; }
+    else if (!/^[0-9]{10}$/.test(phone)) { setError(document.getElementById('phone'), document.getElementById('phoneError'), 'Enter a valid 10-digit number'); valid = false; }
+    else { clearOrderItemError(document.getElementById('phone').parentNode); }
 
     var address = document.getElementById('address').value.trim();
-    if (!address) { setError('address', 'addressError', 'Please enter your delivery address'); valid = false; }
-    else { clearError('address', 'addressError'); }
+    if (!address) { setError(document.getElementById('address'), document.getElementById('addressError'), 'Please enter your delivery address'); valid = false; }
+    else { clearOrderItemError(document.getElementById('address').parentNode); }
 
     var pincode = document.getElementById('pincode').value.trim();
-    if (pincode && !/^[0-9]{6}$/.test(pincode)) { setError('pincode', 'pincodeError', 'Enter a valid 6-digit pincode'); valid = false; }
-    else { clearError('pincode', 'pincodeError'); }
+    if (pincode && !/^[0-9]{6}$/.test(pincode)) { setError(document.getElementById('pincode'), document.getElementById('pincodeError'), 'Enter a valid 6-digit pincode'); valid = false; }
+    else { clearOrderItemError(document.getElementById('pincode').parentNode); }
 
-    var product = productSelect.value;
-    if (!product) { setError('product', 'productError', 'Please select a product'); valid = false; }
-    else { clearError('product', 'productError'); }
+    var items = getOrderItems();
+    items.forEach(function (item) {
+      var productError = item.wrapper.querySelector('.productError');
+      var qtyError = item.wrapper.querySelector('.quantityError');
+      clearOrderItemError(item.wrapper);
 
-    var qty = parseInt(quantityInput.value);
-    if (!qty || qty < 1) { setError('quantity', 'quantityError', 'Quantity must be at least 1'); valid = false; }
-    else { clearError('quantity', 'quantityError'); }
+      if (!item.product) {
+        setError(item.productInput, productError, 'Please select a product');
+        valid = false;
+      }
+      if (!item.qty || item.qty < 1) {
+        setError(item.qtyInput, qtyError, 'Quantity must be at least 1');
+        valid = false;
+      }
+    });
 
     return valid;
   }
 
-  /* ── Form Submit ── */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validateForm()) return;
 
-    var name    = document.getElementById('name').value.trim();
-    var phone   = document.getElementById('phone').value.trim();
+    var name = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
     var address = document.getElementById('address').value.trim();
     var pincode = document.getElementById('pincode').value.trim();
-    var city    = document.getElementById('city').value.trim();
-    var product = productSelect.value;
-    var qty     = parseInt(quantityInput.value);
-    var notes   = document.getElementById('notes').value.trim();
+    var city = document.getElementById('city').value.trim();
+    var notes = document.getElementById('notes').value.trim();
     var businessNumber = document.getElementById('businessNumber').value;
 
-    var productLabel = productSelect.options[productSelect.selectedIndex].text;
-    var total = prices[product] * qty;
+    var items = getOrderItems();
+    var total = 0;
+    var productLines = items.map(function (item, index) {
+      var productLabel = item.productInput.options[item.productInput.selectedIndex].text;
+      if (item.product && prices[item.product]) {
+        total += prices[item.product] * item.qty;
+      }
+      return '*Item ' + (index + 1) + ':* ' + productLabel + ' — ' + item.qty + ' Litre(s)';
+    }).join('\n');
 
-    // Build full address string
     var fullAddress = address;
     if (city) fullAddress += ', ' + city;
     if (pincode) fullAddress += ' - ' + pincode;
 
-    // Build WhatsApp message
     var message = '🫒 *New Order — Pasumai Oils*\n\n';
     message += '*Name:* ' + name + '\n';
     message += '*Phone:* ' + phone + '\n';
     message += '*Address:* ' + fullAddress + '\n\n';
-    message += '*Product:* ' + productLabel + '\n';
-    message += '*Quantity:* ' + qty + ' Litre(s)\n';
+    message += productLines + '\n';
     message += '*Total:* ₹' + total.toLocaleString('en-IN') + '\n';
     if (notes) {
       message += '\n*Notes:* ' + notes;
@@ -238,15 +316,15 @@ if (statNumbers.length > 0 && 'IntersectionObserver' in window) {
     var encodedMessage = encodeURIComponent(message);
     var whatsappURL = 'https://wa.me/' + businessNumber + '?text=' + encodedMessage;
 
-    // Show success & open WhatsApp
     form.style.display = 'none';
     successMessage.classList.remove('hidden');
     window.open(whatsappURL, '_blank');
 
-    // Auto-reset after 5 seconds
     setTimeout(function () {
       form.reset();
       totalDisplay.textContent = '₹0';
+      orderItemsContainer.innerHTML = '';
+      addOrderItem();
       form.style.display = '';
       successMessage.classList.add('hidden');
     }, 5000);
